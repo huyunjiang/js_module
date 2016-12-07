@@ -1,0 +1,87 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "react_native_sound_chat",
+        "scope": null,
+        "escapedName": "react_native_sound_chat",
+        "name": "react_native_sound_chat",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "D:\\reactProjects\\DuoBao"
+    ]
+  ],
+  "_from": "react_native_sound_chat@latest",
+  "_id": "react_native_sound_chat@1.0.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/react_native_sound_chat",
+  "_nodeVersion": "6.3.1",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/react_native_sound_chat-1.0.0.tgz_1480994657637_0.6494100815616548"
+  },
+  "_npmUser": {
+    "name": "huyunjiang",
+    "email": "1642165896@qq.com"
+  },
+  "_npmVersion": "3.10.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "react_native_sound_chat",
+    "scope": null,
+    "escapedName": "react_native_sound_chat",
+    "name": "react_native_sound_chat",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/react_native_sound_chat/-/react_native_sound_chat-1.0.0.tgz",
+  "_shasum": "c8d5d8b3dbf5de8675efb9642655a92d8956797f",
+  "_shrinkwrap": null,
+  "_spec": "react_native_sound_chat",
+  "_where": "D:\\reactProjects\\DuoBao",
+  "author": {
+    "name": "huyunjiang"
+  },
+  "bugs": {
+    "url": "https://github.com/huyunjiang/js_module/issues"
+  },
+  "dependencies": {},
+  "description": "sound_chat",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "c8d5d8b3dbf5de8675efb9642655a92d8956797f",
+    "tarball": "https://registry.npmjs.org/react_native_sound_chat/-/react_native_sound_chat-1.0.0.tgz"
+  },
+  "homepage": "https://github.com/huyunjiang/js_module#readme",
+  "keywords": [
+    "123456"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "huyunjiang",
+      "email": "1642165896@qq.com"
+    }
+  ],
+  "name": "react_native_sound_chat",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huyunjiang/js_module.git"
+  },
+  "scripts": {
+    "test": "react_native"
+  },
+  "version": "1.0.2"
+}
