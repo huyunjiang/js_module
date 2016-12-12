@@ -17,6 +17,8 @@ import android.widget.AutoCompleteTextView.Validator;
 import android.os.Handler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 
 /**
 * 统一接口
@@ -31,6 +33,7 @@ public class VoiceChatApi implements IVoiceAPI{
 	private Context _context;
 	public static final String TAG = "VoiceChatApi";
 	private ReactApplicationContext _reactContext;
+	private MediaPlayer mediaPlayer;
 
 	public VoiceChatApi(ReactApplicationContext reactContext){
 		_reactContext=reactContext;
@@ -59,8 +62,12 @@ public class VoiceChatApi implements IVoiceAPI{
 
 	//播放录音
 	public void recordPlay(String filePath){
-		MediaPlayer mediaPlayer = new MediaPlayer();
-		try {
+		if(mediaPlayer!=null){
+			mediaPlayer.release();
+			mediaPlayer=null;
+		}
+		mediaPlayer = new MediaPlayer();
+		try{
 			File f = new File(filePath);
 			mediaPlayer.setDataSource(f.getAbsolutePath());
 			mediaPlayer.prepare();
@@ -71,6 +78,12 @@ public class VoiceChatApi implements IVoiceAPI{
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void stopPlay(){
+		if(mediaPlayer!=null){
+			mediaPlayer.stop();
 		}
 	}
 
@@ -85,12 +98,14 @@ public class VoiceChatApi implements IVoiceAPI{
 		new UpLoadecordFile().execute();// 调用异步任务
 	}
 
+
+
 	/** 异步任务-录音上传 */
 	public class UpLoadecordFile extends AsyncTask<String, Integer, String> {
 
 		@Override
 		protected String doInBackground(String... parameters) {
-			return UploadUtil.uploadFile(recordManger.getFile(),uploadFileServerUrl,RecordManger.duration);
+			return UploadUtil.uploadFile(recordManger.getFile(),uploadFileServerUrl);
 		}
 
 		@Override
@@ -100,11 +115,20 @@ public class VoiceChatApi implements IVoiceAPI{
 				if (uploadFileStateListener != null)
 					uploadFileStateListener.onState(-2, "上传文件失败");
 			}else{
-				File f = recordManger.getFile();
 				sendEvent("uploadSuccess",result);
 				if (uploadFileStateListener != null)
 					uploadFileStateListener.onState(0, "上传文件成功");
 			}
+		}
+	}
+
+	public void uploadImgs(ReadableArray filePaths){
+		for (int i = 0; i < filePaths.size(); i++) {
+            ReadableMap file = filePaths.getMap(i);
+            String imgServer= file.getString("imgServer");
+            String filePath = file.getString("filePath");
+            filePath = filePath.replace("file://", "");
+			new UploadImageTask().execute(filePath,imgServer);
 		}
 	}
 
@@ -155,6 +179,34 @@ public class VoiceChatApi implements IVoiceAPI{
 			}
 		}
 	}
+
+	/** 异步任务-上传图片 */
+	public class UploadImageTask extends AsyncTask<String, Integer, String> {
+		@Override
+		protected String doInBackground(String... parameters) {
+			try {
+				File f= new File(parameters[0]);
+				return UploadUtil.uploadFile(f,parameters[1]);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (result == null) {
+				sendEvent("uploadImgFail","上传失败");
+				if (uploadFileStateListener != null)
+					uploadFileStateListener.onState(-2, "上传文件失败");
+			}else{
+				sendEvent("uploadImgSuccess",result);
+				if (uploadFileStateListener != null)
+					uploadFileStateListener.onState(0, "上传文件成功");
+			}
+		}
+	}
+
 
 	public boolean fileIsExits(String path){
 		File f= new File(path);

@@ -45,11 +45,9 @@ public class UploadUtil {
 	 *            需要上传的文件
 	 * @param RequestURL
 	 *            请求的rul
-	 * @param time
-	 *            声音的秒数
 	 * @return 返回响应的内容
 	 */
-	public static String uploadFile(File file, String RequestURL, Long time) {
+	public static String uploadFile(File file, String RequestURL) {
 		String result = null;
 		String BOUNDARY = UUID.randomUUID().toString(); // 边界标识 随机生成
 		String PREFIX = "--", LINE_END = "\r\n";
@@ -87,7 +85,7 @@ public class UploadUtil {
 					while ((line = rd.readLine()) != null) {
 						total.append(line);
 					}
-					Log.e(TAG, "record录制返回" + total.toString());
+					Log.e(TAG, "上传结果返回" + total.toString());
 					JSONObject backObj = new JSONObject(total.toString());
 					result=backObj.getString("imgurl");
 					entity.consumeContent();

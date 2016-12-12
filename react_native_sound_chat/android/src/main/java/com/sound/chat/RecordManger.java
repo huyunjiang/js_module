@@ -37,15 +37,15 @@ public class RecordManger {
 		/**
 		 * 分贝的计算公式K=20lg(Vo/Vi) Vo当前振幅值 Vi基准值为600
 		 */
-		private int BASE = 600;
-        private int RATIO=5;
+		private int BASE = 500;
+        private int RATIO= 5;
     	private int postDelayed =200;
 		public void run() {
 			  // int vuSize = 10 * mMediaRecorder.getMaxAmplitude() / 32768;  
             int ratio =mr.getMaxAmplitude() / BASE;  
             int db = (int) (20 * Math.log10(Math.abs(ratio)));  
             int value=db / RATIO;
-            if(value<0)value=0;
+            if(value<0) value=0;
             if(soundAmplitudeListen!=null)
             	soundAmplitudeListen.amplitude(ratio, db, value);
 			mHandler.postDelayed(mUpdateMicStatusTimer, postDelayed);

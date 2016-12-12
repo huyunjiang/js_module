@@ -9,6 +9,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReadableArray;
 
 public class SoundModule extends ReactContextBaseJavaModule{
 
@@ -49,6 +50,11 @@ public class SoundModule extends ReactContextBaseJavaModule{
     } 
 
     @ReactMethod
+    public void recordStopPlay(){
+        api.stopPlay();
+    }     
+
+    @ReactMethod
     public void recordUpload(){
     	api.recordUpload();
     } 
@@ -56,6 +62,11 @@ public class SoundModule extends ReactContextBaseJavaModule{
     @ReactMethod
     public void recordDownload(String url){
         api.recordDownload(url);
+    } 
+
+    @ReactMethod
+    public void imgsUpload(ReadableArray files){
+        api.uploadImgs(files);
     } 
 
     @ReactMethod
