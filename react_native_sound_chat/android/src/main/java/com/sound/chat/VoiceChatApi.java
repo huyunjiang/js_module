@@ -19,7 +19,6 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-
 /**
 * 统一接口
 **/
@@ -34,6 +33,7 @@ public class VoiceChatApi implements IVoiceAPI{
 	public static final String TAG = "VoiceChatApi";
 	private ReactApplicationContext _reactContext;
 	private MediaPlayer mediaPlayer;
+	private String _imgType;
 
 	public VoiceChatApi(ReactApplicationContext reactContext){
 		_reactContext=reactContext;
@@ -73,6 +73,15 @@ public class VoiceChatApi implements IVoiceAPI{
 			mediaPlayer.prepare();
 			mediaPlayer.start();
 			Log.d(TAG,"play");
+			//设置播放完成的监听
+			mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+				@Override
+				public void onCompletion(MediaPlayer mediaPlayer) {
+					sendEvent("playSoundFinish","播放完成");
+					mediaPlayer.release();
+					mediaPlayer=null;
+				}
+			});
 			if (downloadFileFileStateListener != null) {
 				downloadFileFileStateListener.onState(0, "成功");
 			}
@@ -122,7 +131,8 @@ public class VoiceChatApi implements IVoiceAPI{
 		}
 	}
 
-	public void uploadImgs(ReadableArray filePaths){
+	public void uploadImgs(ReadableArray filePaths,String imgType){
+		_imgType = imgType;
 		for (int i = 0; i < filePaths.size(); i++) {
             ReadableMap file = filePaths.getMap(i);
             String imgServer= file.getString("imgServer");
@@ -160,14 +170,6 @@ public class VoiceChatApi implements IVoiceAPI{
 					return;
 				}
 			}
-			// MediaPlayer mediaPlayer = new MediaPlayer();
-			// mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-			// 	@Override
-			// 	public void onCompletion(MediaPlayer mediaPlayer) {
-			// 		// TODO Auto-generated method stub
-			// 		mediaPlayer.release();
-			// 	}
-			// });
 			try {
 				sendEvent("downloadSuccess",result.getAbsolutePath());
 				if (downloadFileFileStateListener != null) {
@@ -200,7 +202,7 @@ public class VoiceChatApi implements IVoiceAPI{
 				if (uploadFileStateListener != null)
 					uploadFileStateListener.onState(-2, "上传文件失败");
 			}else{
-				sendEvent("uploadImgSuccess",result);
+				sendEvent("uploadImgSuccess",result+","+_imgType);
 				if (uploadFileStateListener != null)
 					uploadFileStateListener.onState(0, "上传文件成功");
 			}

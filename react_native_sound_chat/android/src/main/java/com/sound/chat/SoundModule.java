@@ -65,8 +65,8 @@ public class SoundModule extends ReactContextBaseJavaModule{
     } 
 
     @ReactMethod
-    public void imgsUpload(ReadableArray files){
-        api.uploadImgs(files);
+    public void imgsUpload(ReadableArray files,String imgType){
+        api.uploadImgs(files,imgType);
     } 
 
     @ReactMethod

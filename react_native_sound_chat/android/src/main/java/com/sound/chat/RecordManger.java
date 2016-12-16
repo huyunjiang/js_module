@@ -83,7 +83,7 @@ public class RecordManger {
 		// 开始录制
 		mr.start();
 		//启动振幅监听计时器
-		mHandler.post(mUpdateMicStatusTimer);
+		//mHandler.post(mUpdateMicStatusTimer);
 		Log.d(TAG,"startRecord");
 	}
 	
@@ -96,7 +96,7 @@ public class RecordManger {
 			mr.stop();
 			mr.release();
 			mr = null;
-			mHandler.removeCallbacks(mUpdateMicStatusTimer);
+			//mHandler.removeCallbacks(mUpdateMicStatusTimer);
 		}
 		String result = duration.toString()+","+filePath;
 		return result;
