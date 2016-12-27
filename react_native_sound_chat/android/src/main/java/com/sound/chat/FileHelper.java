@@ -3,6 +3,7 @@ package com.sound.chat;
 import android.content.*;
 import android.os.*;
 import android.util.*;
+import android.app.Activity;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -11,13 +12,16 @@ import java.util.*;
 import org.apache.http.util.ByteArrayBuffer;
 import org.json.JSONObject;
 import org.apache.http.util.EncodingUtils;
+import android.content.SharedPreferences;
 
 /**
  * 下载类
  * */
 public class FileHelper {
 
-	public static File DownloadFromUrlToData(String serverUrl, String fileName,
+	private SharedPreferences sharedPreferences=null;
+
+	public static File DownloadFromUrlToData(String serverUrl,String fileName,String type,
 			Context context) {
 		try {
 			if (!Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
@@ -39,7 +43,7 @@ public class FileHelper {
 			}
 			// File dir = new File(Environment.getExternalStorageDirectory()
 			// 		.getCanonicalFile() + "/" + dirName);
-			String path=Environment.getExternalStorageDirectory().getAbsolutePath()+"/redpack/";
+			String path=Environment.getExternalStorageDirectory().getAbsolutePath()+"/redpack/"+type+"/";
 			File f = new File(path);
 			if(!f.exists()){
 				f.mkdirs();
@@ -96,5 +100,23 @@ public class FileHelper {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String getConfig(Context context,String url){
+		if(sharedPreferences==null)
+			sharedPreferences=context.getSharedPreferences("img_list",Activity.MODE_PRIVATE);
+		String nativePath=sharedPreferences.getString(url,"");
+		return nativePath;
+	}
+
+	public void saveConfig(Context context,String url,String nativePath){
+		if(sharedPreferences==null)
+			sharedPreferences=context.getSharedPreferences("img_list",Activity.MODE_PRIVATE);
+        //实例化SharedPreferences.Editor对象
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        //用putString的方法保存数据
+        editor.putString(url, nativePath);
+        //提交当前数据
+        editor.apply();
 	}
 }

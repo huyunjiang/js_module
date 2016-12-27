@@ -19,6 +19,12 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+//获取系统属性
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import android.app.AppOpsManager;
+import android.content.pm.ApplicationInfo;
 /**
 * 统一接口
 **/
@@ -34,6 +40,9 @@ public class VoiceChatApi implements IVoiceAPI{
 	private ReactApplicationContext _reactContext;
 	private MediaPlayer mediaPlayer;
 	private String _imgType;
+	//通知栏状态参数
+	private static final String CHECK_OP_NO_THROW = "checkOpNoThrow";
+    private static final String OP_POST_NOTIFICATION = "OP_POST_NOTIFICATION";
 
 	public VoiceChatApi(ReactApplicationContext reactContext){
 		_reactContext=reactContext;
@@ -125,6 +134,8 @@ public class VoiceChatApi implements IVoiceAPI{
 					uploadFileStateListener.onState(-2, "上传文件失败");
 			}else{
 				sendEvent("uploadSuccess",result);
+				//保存配置信息
+				saveConfig(result,recordManger.getFile().getAbsolutePath());
 				if (uploadFileStateListener != null)
 					uploadFileStateListener.onState(0, "上传文件成功");
 			}
@@ -144,18 +155,25 @@ public class VoiceChatApi implements IVoiceAPI{
 
 	/** 下载*/
 	public void recordDownload(String uploadFilename) {
-		new DownloadRecordFile().execute(uploadFilename);
+		new DownloadRecordFile().execute(uploadFilename,"record");
+	}
+
+	public void imageDownload(Context context, String uploadFilename){
+		_context = context;
+		new DownloadRecordFile().execute(uploadFilename,"image");
 	}
 
 	/** 异步任务-下载后播放 */
 	public class DownloadRecordFile extends AsyncTask<String, Integer, File> {
+		String httpurl="";
 		@Override
 		protected File doInBackground(String... parameters) {
 			try {
 				String filename = parameters[0];
+				httpurl = parameters[0];
 				int index=filename.lastIndexOf("/");
 				filename=filename.substring(index+1);
-				return FileHelper.DownloadFromUrlToData(parameters[0], filename, _context);
+				return FileHelper.DownloadFromUrlToData(parameters[0],filename,parameters[1],_context);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -172,6 +190,8 @@ public class VoiceChatApi implements IVoiceAPI{
 			}
 			try {
 				sendEvent("downloadSuccess",result.getAbsolutePath());
+				//保存数据到配置文件
+				saveConfig(httpurl,result.getAbsolutePath());
 				if (downloadFileFileStateListener != null) {
 					downloadFileFileStateListener.onState(0, "成功");
 					return;
@@ -224,6 +244,41 @@ public class VoiceChatApi implements IVoiceAPI{
 	        f.delete();  
 	    }   
 	}
+
+	public boolean isNotificationEnabled(Context context) {
+        AppOpsManager mAppOps = (AppOpsManager)context.getSystemService(Context.APP_OPS_SERVICE);
+        ApplicationInfo appInfo = context.getApplicationInfo();
+        String pkg = context.getApplicationContext().getPackageName();
+        int uid = appInfo.uid;
+        Class appOpsClass = null; /* Context.APP_OPS_MANAGER */
+        try {
+            appOpsClass = Class.forName(AppOpsManager.class.getName());
+            Method checkOpNoThrowMethod = appOpsClass.getMethod(CHECK_OP_NO_THROW, Integer.TYPE, Integer.TYPE, String.class);
+            Field opPostNotificationValue = appOpsClass.getDeclaredField(OP_POST_NOTIFICATION);
+            int value = (int)opPostNotificationValue.get(Integer.class);
+            return ((int)checkOpNoThrowMethod.invoke(mAppOps,value, uid, pkg) == AppOpsManager.MODE_ALLOWED);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return false;
+    } 
+
+    public String getConfig(Context context,String url){
+    	_context = context;
+    	return new FileHelper().getConfig(_context,url);
+    }
+
+    public void saveConfig(String url,String nativePath){
+    	new FileHelper().saveConfig(_context,url,nativePath);
+    }
 
 	private void sendEvent(String eventName,String returnMsg){
         _reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)

@@ -65,6 +65,11 @@ public class SoundModule extends ReactContextBaseJavaModule{
     } 
 
     @ReactMethod
+    public void imageDownload(String url){
+        api.imageDownload(getCurrentActivity(),url);
+    } 
+
+    @ReactMethod
     public void imgsUpload(ReadableArray files,String imgType){
         api.uploadImgs(files,imgType);
     } 
@@ -82,4 +87,34 @@ public class SoundModule extends ReactContextBaseJavaModule{
         api.fileDelete(path);
     } 
 
+    @ReactMethod
+    public void isNotificationEnabled(Callback callback){
+        boolean isEnabled = api.isNotificationEnabled(getCurrentActivity());
+        Log.d(TAG,isEnabled+"");
+        if (callback != null) {
+            callback.invoke(isEnabled);
+        }
+    } 
+
+    @ReactMethod
+    public void getNetWorkType(Callback callback){
+        String netType = NetManager.getNetWorkType(getCurrentActivity());
+        Log.d(TAG,netType+"");
+        if (callback != null) {
+            callback.invoke(netType);
+        }
+    } 
+
+    @ReactMethod
+    public void getConfig(String url,Callback callback){
+        String path = api.getConfig(getCurrentActivity(),url);
+        if(callback != null){
+            if(!path.equals("")&&path!=null){
+                callback.invoke(path);
+            }
+            else{
+                callback.invoke(false);
+            }
+        }
+    } 
 }

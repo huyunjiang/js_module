@@ -61,7 +61,7 @@ public class RecordManger {
 			return;
 		}
 		startTime=new Date().getTime();
-		String path=Environment.getExternalStorageDirectory().getAbsolutePath()+"/redpack/";
+		String path=Environment.getExternalStorageDirectory().getAbsolutePath()+"/redpack/record/";
 		File f = new File(path);
 		if(!f.exists()){
 			f.mkdirs();
